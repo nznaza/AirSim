@@ -104,4 +104,5 @@ private: //methods
     void setDistortionMaterial(int image_type, UObject* outer, FPostProcessSettings& obj);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
     static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
+    static void setUpdateCapture(USceneCaptureComponent2D* capture, bool nodisplay);
 };

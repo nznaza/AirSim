@@ -504,6 +504,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
 {
     USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
     if (capture != nullptr) {
+        setUpdateCapture(capture, !is_enabled);
         UDetectionComponent* detection = getDetectionComponent(type, false);
         if (is_enabled) {
             //do not make unnecessary calls to Activate() which otherwise causes crash in Unreal
@@ -579,14 +580,13 @@ void APIPCamera::onViewModeChanged(bool nodisplay)
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
         if (capture) {
-            if (nodisplay) {
-                capture->bCaptureEveryFrame = false;
-                capture->bCaptureOnMovement = false;
-            }
-            else {
-                capture->bCaptureEveryFrame = true;
-                capture->bCaptureOnMovement = true;
-            }
+            setUpdateCapture(capture, nodisplay);
         }
     }
+}
+
+void APIPCamera::setUpdateCapture(USceneCaptureComponent2D* capture, bool nodisplay)
+{
+    capture->bCaptureEveryFrame = !nodisplay;
+    capture->bCaptureOnMovement = !nodisplay;
 }
