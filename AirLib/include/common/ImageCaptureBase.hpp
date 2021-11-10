@@ -26,6 +26,8 @@ namespace airlib
             Segmentation,
             SurfaceNormals,
             Infrared,
+            Roughness,
+            InfraredRoughness,
             Count //must be last
         };
 

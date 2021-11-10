@@ -41,7 +41,8 @@ APIPCamera::APIPCamera()
     image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
-
+    image_type_to_pixel_format_map_.Add(8, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(9, EPixelFormat::PF_B8G8R8A8);
     object_filter_ = FObjectFilter();
 }
 
@@ -70,7 +71,10 @@ void APIPCamera::PostInitializeComponents()
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("InfraredCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
-
+    captures_[Utils::toNumeric(ImageType::Roughness)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("RoughnessCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::InfraredRoughness)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("InfraredRoughnessCaptureComponent"));
     for (unsigned int i = 0; i < imageTypeCount(); ++i) {
         detections_[i] = NewObject<UDetectionComponent>(this);
         if (detections_[i]) {
@@ -355,6 +359,7 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
             switch (Utils::toEnum<ImageType>(image_type)) {
             case ImageType::Scene:
             case ImageType::Infrared:
+
                 updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], false, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, false);
                 break;
 
@@ -362,7 +367,8 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
             case ImageType::SurfaceNormals:
                 updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, true);
                 break;
-
+            case ImageType::Roughness:
+            case ImageType::InfraredRoughness:
             default:
                 updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, false);
                 break;

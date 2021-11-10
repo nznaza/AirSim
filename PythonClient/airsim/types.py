@@ -37,6 +37,10 @@ class _ImageType(type):
         return 6
     def Infrared(cls):
         return 7
+    def Roughness(cls):
+        return 8
+    def InfraredRoughness(cls):
+        return 9
 
     def __getattr__(self, key):
         if key == 'DepthPlanner':
@@ -52,6 +56,8 @@ class ImageType(metaclass=_ImageType):
     Segmentation = 5
     SurfaceNormals = 6
     Infrared = 7
+    Roughness = 8
+    InfraredRoughness = 9
 
 class DrivetrainType:
     MaxDegreeOfFreedom = 0

@@ -356,11 +356,16 @@ std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
 
 void UAirBlueprintLib::InitializeMeshStencilIDs(bool override_existing)
 {
+    TArray<FString> Meshes;
     for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp) {
         InitializeObjectStencilID(*comp, override_existing);
+        if (comp->GetStaticMesh())
+            Meshes.AddUnique(*comp->GetStaticMesh()->GetName());
     }
     for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp) {
         InitializeObjectStencilID(*comp, override_existing);
+        if (comp->SkeletalMesh)
+            Meshes.AddUnique(*comp->SkeletalMesh->GetName());
     }
     //for (TObjectIterator<UFoliageType> comp; comp; ++comp)
     //{
@@ -368,6 +373,10 @@ void UAirBlueprintLib::InitializeMeshStencilIDs(bool override_existing)
     //}
     for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp) {
         InitializeObjectStencilID(*comp, override_existing);
+        Meshes.AddUnique(*comp->GetName());
+    }
+    for (int i = 0; i < Meshes.Num(); ++i) {
+        UE_LOG(LogTemp, Display, TEXT("Mesh name: %s"), *Meshes[i]);
     }
 }
 
