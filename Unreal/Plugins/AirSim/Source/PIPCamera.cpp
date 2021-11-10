@@ -102,7 +102,7 @@ void APIPCamera::BeginPlay()
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 
-    onViewModeChanged(false);
+    onViewModeChanged(true);
 
     gimbal_stabilization_ = 0;
     gimbald_rotator_ = this->GetActorRotation();
@@ -274,6 +274,20 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
+void APIPCamera::setCaptureUpdate(USceneCaptureComponent2D* capture, bool nodisplay)
+{
+    capture->bCaptureEveryFrame = !nodisplay;
+    capture->bCaptureOnMovement = !nodisplay;
+    capture->bAlwaysPersistRenderingState = true;
+}
+
+void APIPCamera::setCameraTypeUpdate(ImageType type, bool nodisplay)
+{
+    USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
+    if (capture != nullptr)
+        setCaptureUpdate(capture, nodisplay);
+}
+
 void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
 {
     FTransform pose = ned_transform_->fromRelativeNed(relative_pose);
@@ -287,7 +301,9 @@ void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
         gimbald_rotator_.Roll = rotator.Roll;
         gimbald_rotator_.Yaw = rotator.Yaw;
     }
-    this->SetActorRelativeRotation(rotator);
+    else {
+        this->SetActorRelativeRotation(rotator);
+    }
 }
 
 void APIPCamera::setCameraFoV(float fov_degrees)
@@ -583,14 +599,7 @@ void APIPCamera::onViewModeChanged(bool nodisplay)
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
         if (capture) {
-            if (nodisplay) {
-                capture->bCaptureEveryFrame = false;
-                capture->bCaptureOnMovement = false;
-            }
-            else {
-                capture->bCaptureEveryFrame = true;
-                capture->bCaptureOnMovement = true;
-            }
+            setCaptureUpdate(capture, nodisplay);
         }
     }
 }
